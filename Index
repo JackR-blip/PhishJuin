@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Processus de Validation Sécurisé</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root { --accent: #ec4899; }
+        body { margin: 0; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        .container { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); padding: 40px; border-radius: 30px; width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        input { width: 100%; margin: 12px 0; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 18px; background: linear-gradient(90deg, #f59e0b, #ec4899); border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        
+        #popup { display: none; position: fixed; inset: 0; background: #000; z-index: 99; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .alert-bg { position: absolute; inset: 0; border: 10px solid #ff0000; animation: blink 0.5s infinite; pointer-events: none; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        
+        .code-area { font-family: 'Courier New', monospace; color: #0f0; margin-bottom: 20px; font-size: 1.2em; min-height: 1.5em; }
+        .advice-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 1000px; margin: 20px auto; }
+        .advice-item { background: rgba(255,0,0,0.1); padding: 10px; border-left: 3px solid #f00; text-align: left; font-size: 0.85em; opacity: 0; }
+        
+        #close-btn { 
+            padding: 15px 40px; background: linear-gradient(145deg, #f00, #a00); color: white; border: none; border-radius: 10px; 
+            box-shadow: 0 5px 0 #500; cursor: pointer; font-size: 1.2em; font-weight: bold; text-transform: uppercase;
+        }
+        #close-btn:active { box-shadow: 0 0 0 #500; transform: translateY(5px); }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="container">
+    <div class="card" id="form-card">
+        <h2 style="margin-bottom: 30px;">Formulaire de Validation</h2>
+        <form id="dataForm">
+            <input type="text" name="nom" placeholder="Nom Complet" required>
+            <input type="email" name="email" placeholder="Adresse Email Professionnelle" required>
+            <input type="text" name="adresse" placeholder="Adresse Physique" required>
+            <input type="tel" name="phone" placeholder="Numéro de Téléphone" required>
+            <input type="text" name="poste" placeholder="Poste Actuel" required>
+            <button type="submit">Soumettre mes informations</button>
+        </form>
+    </div>
+</div>
+
+<div id="popup">
+    <div class="alert-bg"></div>
+    <h1 style="color: #ff0000; font-size: 3em; margin: 10px;">ALERTE SÉCURITÉ</h1>
+    <div class="code-area" id="terminal"></div>
+    <div class="advice-list" id="advice-container"></div>
+    <button id="close-btn" onclick="document.getElementById('popup').style.display='none'">FERMER L'ALERTE</button>
+    <p style="margin-top: 20px; color: #fff; max-width: 600px; line-height: 1.4;">
+        Rassurez-vous, il s'agissait d'une <b>campagne préventive</b>. Vos données ne sont pas compromises, mais restez vigilant. 
+        <br>Campagne pilotée par : <b>Jacky RAKOTOMALALA, CSO</b>
+    </p>
+</div>
+
+<audio id="alarm" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    function animateBG() {
+        ctx.fillStyle = 'rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = '#fff'; ctx.fillText('.', Math.random()*canvas.width, Math.random()*canvas.height);
+        requestAnimationFrame(animateBG);
+    }
+    animateBG();
+
+    document.getElementById('dataForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        document.getElementById('alarm').play();
+        document.getElementById('popup').style.display = 'flex';
+        
+        const terminal = document.getElementById('terminal');
+        const steps = ["Analyse intrusion...", "ERR: Accès non autorisé!", "Patching...", "Système sécurisé."];
+        let i = 0;
+        function typeWriter() {
+            if(i < steps.length) { terminal.innerHTML = steps[i]; i++; setTimeout(typeWriter, 600); }
+        }
+        typeWriter();
+
+        const advices = [
+            "1. Vérifiez l'expéditeur", "2. Survolez les liens", "3. Méfiez-vous de l'urgence", "4. Ne saisissez rien",
+            "5. Activez le MFA", "6. Signalez tout mail suspect", "7. Mettez à jour vos OS", "8. Utilisez des mots de passe robustes",
+            "9. Ne partagez pas vos accès", "10. Vérifiez les certificats HTTPS", "11. Ne branchez pas d'USB inconnus", "12. Verrouillez votre session",
+            "13. Soyez sceptique face aux offres trop belles", "14. Vérifiez les domaines réels", "15. Contactez le service IT en cas de doute"
+        ];
+        const container = document.getElementById('advice-container');
+        advices.forEach((a, idx) => {
+            const div = document.createElement('div');
+            div.className = 'advice-item';
+            div.innerHTML = "✔ " + a;
+            container.appendChild(div);
+            gsap.to(div, { opacity: 1, delay: idx * 0.2 });
+        });
+    });
+</script>
+</body>
+</html>
